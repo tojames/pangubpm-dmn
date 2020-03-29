@@ -54,6 +54,7 @@
 ###### 欢迎加群
 QQ群：[196354266](https://qm.qq.com/cgi-bin/qm/qr?k=8_4PBqG5YMbKXZMVP2QcD9P_JHJsbDyo"196354266").
 ![Image text](https://pub.idqqimg.com/wpa/images/group.png)
+
 欢迎加群，共同探讨DMN决策引擎行业的技术经验！
 
 盘古BPM系统官网：http://www.pangubpm.com/

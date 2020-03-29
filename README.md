@@ -52,8 +52,7 @@
 如需进行整体架构、DMN1.3标准系统、无缝对接Activiti/Flowable/Zeebe（不限这几种BPM框架）等多种工作流系统可加微信(17812259397)进行交流
 
 ###### 欢迎加群
-QQ群：[196354266](https://qm.qq.com/cgi-bin/qm/qr?k=8_4PBqG5YMbKXZMVP2QcD9P_JHJsbDyo"196354266").
-![Image text](https://pub.idqqimg.com/wpa/images/group.png)
+QQ群：196354266
 
 欢迎加群，共同探讨DMN决策引擎行业的技术经验！
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.pangu.dmn</groupId>
+    <artifactId>pangu-engine-dmn-root</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <groupId>com.pangu.dmn</groupId>
+  <artifactId>pangu-engine-feel-juel</artifactId>
+  <version>1.0.0</version>
+  <name>pangu DMN - engine FEEL - JUEL</name>
+  <properties>
+    <version.assertj>1.7.1</version.assertj>
+    <version.commons>1.7.1</version.commons>
+    <version.groovy>2.4.13</version.groovy>
+    <version.juel>2.2.7</version.juel>
+    <version.junit>4.12</version.junit>
+    <version.joda-time>2.1</version.joda-time>
+    <version.logback>1.1.2</version.logback>
+    <version.mockito>1.9.5</version.mockito>
+
+    <pangu.version.old>7.10.0</pangu.version.old>
+    <common.version>1.7.1</common.version>
+
+
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.pangu.dmn</groupId>
+      <artifactId>pangu-engine-feel-api</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.pangu.commons</groupId>
+      <artifactId>pangu-commons-logging</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.pangu.commons</groupId>
+      <artifactId>pangu-commons-typed-values</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-api</artifactId>
+      <version>${version.juel}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-impl</artifactId>
+      <version>${version.juel}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-spi</artifactId>
+      <version>${version.juel}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${version.junit}</version>
+
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${version.assertj}</version>
+
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+
+
+</project>

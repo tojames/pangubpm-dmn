@@ -1,0 +1,353 @@
+/**
+ * Copyright (c) 2019-2030 panguBpm All rights reserved.
+ * <p>
+ * http://www.pangubpm.com/
+ * <p>
+ * （盘古BPM工作流平台）
+ */
+package com.pangubpm.bpm.model.xml.impl.type;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.pangubpm.bpm.model.xml.Model;
+import com.pangubpm.bpm.model.xml.ModelException;
+import com.pangubpm.bpm.model.xml.ModelInstance;
+import com.pangubpm.bpm.model.xml.impl.ModelImpl;
+import com.pangubpm.bpm.model.xml.impl.ModelInstanceImpl;
+import com.pangubpm.bpm.model.xml.impl.instance.ModelTypeInstanceContext;
+import com.pangubpm.bpm.model.xml.impl.util.ModelTypeException;
+import com.pangubpm.bpm.model.xml.impl.util.ModelUtil;
+import com.pangubpm.bpm.model.xml.instance.DomDocument;
+import com.pangubpm.bpm.model.xml.instance.DomElement;
+import com.pangubpm.bpm.model.xml.instance.ModelElementInstance;
+import com.pangubpm.bpm.model.xml.type.ModelElementType;
+import com.pangubpm.bpm.model.xml.type.attribute.Attribute;
+import com.pangubpm.bpm.model.xml.type.child.ChildElementCollection;
+import com.pangubpm.bpm.model.xml.type.ModelElementTypeBuilder;
+
+/**
+ * @author pangubpm(pangubpm@139.com)
+ *
+ */
+public class ModelElementTypeImpl implements ModelElementType {
+
+  private final ModelImpl model;
+
+  private final String typeName;
+
+  private final Class<? extends ModelElementInstance> instanceType;
+
+  private String typeNamespace;
+
+  private ModelElementTypeImpl baseType;
+
+  private final List<ModelElementType> extendingTypes = new ArrayList<ModelElementType>();
+
+  private final List<Attribute<?>> attributes = new ArrayList<Attribute<?>>();
+
+  private final List<ModelElementType> childElementTypes = new ArrayList<ModelElementType>();
+
+  private final List<ChildElementCollection<?>> childElementCollections = new ArrayList<ChildElementCollection<?>>();
+
+  private ModelElementTypeBuilder.ModelTypeInstanceProvider<?> instanceProvider;
+
+  private boolean isAbstract;
+
+  public ModelElementTypeImpl(ModelImpl model, String name, Class<? extends ModelElementInstance> instanceType) {
+    this.model = model;
+    this.typeName = name;
+    this.instanceType = instanceType;
+  }
+
+  public ModelElementInstance newInstance(ModelInstance modelInstance) {
+    ModelInstanceImpl modelInstanceImpl = (ModelInstanceImpl) modelInstance;
+    DomDocument document = modelInstanceImpl.getDocument();
+    DomElement domElement = document.createElement(typeNamespace, typeName);
+    return newInstance(modelInstanceImpl, domElement);
+  }
+
+  public ModelElementInstance newInstance(ModelInstanceImpl modelInstance, DomElement domElement) {
+    ModelTypeInstanceContext modelTypeInstanceContext = new ModelTypeInstanceContext(domElement, modelInstance, this);
+    return createModelElementInstance(modelTypeInstanceContext);
+  }
+
+  public void registerAttribute(Attribute<?> attribute) {
+    if (!attributes.contains(attribute)) {
+      attributes.add(attribute);
+    }
+  }
+
+  public void registerChildElementType(ModelElementType childElementType) {
+    if (!childElementTypes.contains(childElementType)) {
+      childElementTypes.add(childElementType);
+    }
+  }
+
+  public void registerChildElementCollection(ChildElementCollection<?> childElementCollection) {
+    if (!childElementCollections.contains(childElementCollection)) {
+      childElementCollections.add(childElementCollection);
+    }
+  }
+
+  public void registerExtendingType(ModelElementType modelType) {
+    if (!extendingTypes.contains(modelType)) {
+      extendingTypes.add(modelType);
+    }
+  }
+
+  protected ModelElementInstance createModelElementInstance(ModelTypeInstanceContext instanceContext) {
+    if (isAbstract) {
+      throw new ModelTypeException("Model element type " + getTypeName() + " is abstract and no instances can be created.");
+    }
+    else {
+      return instanceProvider.newInstance(instanceContext);
+    }
+  }
+
+  public final List<Attribute<?>> getAttributes() {
+    return attributes;
+  }
+
+  public String getTypeName() {
+    return typeName;
+  }
+
+  public Class<? extends ModelElementInstance> getInstanceType() {
+    return instanceType;
+  }
+
+  public void setTypeNamespace(String typeNamespace) {
+    this.typeNamespace = typeNamespace;
+  }
+
+  public String getTypeNamespace() {
+    return typeNamespace;
+  }
+
+  public void setBaseType(ModelElementTypeImpl baseType) {
+    if (this.baseType == null) {
+      this.baseType = baseType;
+    }
+    else if (!this.baseType.equals(baseType)) {
+      throw new ModelException("Type can not have multiple base types. " + this.getClass() + " already extends type " + this.baseType.getClass()
+          + " and can not also extend type " + baseType.getClass());
+    }
+  }
+
+  public void setInstanceProvider(ModelElementTypeBuilder.ModelTypeInstanceProvider<?> instanceProvider) {
+    this.instanceProvider = instanceProvider;
+  }
+  public boolean isAbstract() {
+    return isAbstract;
+  }
+
+  public void setAbstract(boolean isAbstract) {
+    this.isAbstract = isAbstract;
+  }
+
+  public Collection<ModelElementType> getExtendingTypes() {
+    return Collections.unmodifiableCollection(extendingTypes);
+  }
+
+  public Collection<ModelElementType> getAllExtendingTypes() {
+    HashSet<ModelElementType> extendingTypes = new HashSet<ModelElementType>();
+    extendingTypes.add(this);
+    resolveExtendingTypes(extendingTypes);
+    return extendingTypes;
+  }
+
+  /**
+   * Resolve all types recursively which are extending this type
+   *
+   * @param allExtendingTypes set of calculated extending types
+   */
+  public void resolveExtendingTypes(Set<ModelElementType> allExtendingTypes) {
+    for(ModelElementType modelElementType : extendingTypes) {
+      ModelElementTypeImpl modelElementTypeImpl = (ModelElementTypeImpl) modelElementType;
+      if (!allExtendingTypes.contains(modelElementTypeImpl)) {
+        allExtendingTypes.add(modelElementType);
+        modelElementTypeImpl.resolveExtendingTypes(allExtendingTypes);
+      }
+    }
+  }
+
+  /**
+   * Resolve all types which are base types of this type
+   *
+   * @param baseTypes list of calculated base types
+   */
+  public void resolveBaseTypes(List<ModelElementType> baseTypes) {
+    if (baseType != null) {
+      baseTypes.add(baseType);
+      baseType.resolveBaseTypes(baseTypes);
+    }
+  }
+
+
+  public ModelElementType getBaseType() {
+    return baseType;
+  }
+
+  public Model getModel() {
+    return model;
+  }
+
+  public List<ModelElementType> getChildElementTypes() {
+    return childElementTypes;
+  }
+
+  public List<ModelElementType> getAllChildElementTypes() {
+    List<ModelElementType> allChildElementTypes = new ArrayList<ModelElementType>();
+    if (baseType != null) {
+      allChildElementTypes.addAll(baseType.getAllChildElementTypes());
+    }
+    allChildElementTypes.addAll(childElementTypes);
+    return allChildElementTypes;
+  }
+
+  public List<ChildElementCollection<?>> getChildElementCollections() {
+    return childElementCollections;
+  }
+
+  public List<ChildElementCollection<?>> getAllChildElementCollections() {
+    List<ChildElementCollection<?>> allChildElementCollections = new ArrayList<ChildElementCollection<?>>();
+    if (baseType != null) {
+      allChildElementCollections.addAll(baseType.getAllChildElementCollections());
+    }
+    allChildElementCollections.addAll(childElementCollections);
+    return allChildElementCollections;
+  }
+
+  public Collection<ModelElementInstance> getInstances(ModelInstance modelInstance) {
+    ModelInstanceImpl modelInstanceImpl = (ModelInstanceImpl) modelInstance;
+    DomDocument document = modelInstanceImpl.getDocument();
+
+    List<DomElement> elements = getElementsByNameNs(document, typeNamespace);
+
+    List<ModelElementInstance> resultList = new ArrayList<ModelElementInstance>();
+    for (DomElement element : elements) {
+      resultList.add(ModelUtil.getModelElement(element, modelInstanceImpl, this));
+    }
+    return resultList;
+  }
+
+  protected List<DomElement> getElementsByNameNs(DomDocument document, String namespaceURI) {
+    List<DomElement> elements = document.getElementsByNameNs(namespaceURI, typeName);
+
+    if (elements.isEmpty()) {
+      String alternativeNamespaceURI = getModel().getAlternativeNamespace(namespaceURI);
+      if (alternativeNamespaceURI != null) {
+        elements = getElementsByNameNs(document, alternativeNamespaceURI);
+      }
+    }
+
+    return elements;
+  }
+
+  /**
+   * Test if a element type is a base type of this type. So this type extends the given element type.
+   *
+   * @param elementType the element type to test
+   * @return true if {@code childElementTypeClass} is a base type of this type, else otherwise
+   */
+  public boolean isBaseTypeOf(ModelElementType elementType) {
+    if (this.equals(elementType)) {
+      return true;
+    }
+    else {
+      Collection<ModelElementType> baseTypes = ModelUtil.calculateAllBaseTypes(elementType);
+      return baseTypes.contains(this);
+    }
+  }
+
+  /**
+   * Returns a list of all attributes, including the attributes of all base types.
+   *
+   * @return the list of all attributes
+   */
+  public Collection<Attribute<?>> getAllAttributes() {
+    List<Attribute<?>> allAttributes = new ArrayList<Attribute<?>>();
+    allAttributes.addAll(getAttributes());
+    Collection<ModelElementType> baseTypes = ModelUtil.calculateAllBaseTypes(this);
+    for (ModelElementType baseType : baseTypes) {
+      allAttributes.addAll(baseType.getAttributes());
+    }
+    return allAttributes;
+  }
+
+  /**
+   * Return the attribute for the attribute name
+   *
+   * @param attributeName the name of the attribute
+   * @return the attribute or null if it not exists
+   */
+  public Attribute<?> getAttribute(String attributeName) {
+    for (Attribute<?> attribute : getAllAttributes()) {
+      if (attribute.getAttributeName().equals(attributeName)) {
+        return attribute;
+      }
+    }
+    return null;
+  }
+
+  public ChildElementCollection<?> getChildElementCollection(ModelElementType childElementType) {
+    for (ChildElementCollection<?> childElementCollection : getChildElementCollections()) {
+      if (childElementType.equals(childElementCollection.getChildElementType(model))) {
+        return childElementCollection;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public int hashCode() {
+    int prime = 31;
+    int result = 1;
+    result = prime * result + ((model == null) ? 0 : model.hashCode());
+    result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
+    result = prime * result + ((typeNamespace == null) ? 0 : typeNamespace.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    ModelElementTypeImpl other = (ModelElementTypeImpl) obj;
+    if (model == null) {
+      if (other.model != null) {
+        return false;
+      }
+    } else if (!model.equals(other.model)) {
+      return false;
+    }
+    if (typeName == null) {
+      if (other.typeName != null) {
+        return false;
+      }
+    } else if (!typeName.equals(other.typeName)) {
+      return false;
+    }
+    if (typeNamespace == null) {
+      if (other.typeNamespace != null) {
+        return false;
+      }
+    } else if (!typeNamespace.equals(other.typeNamespace)) {
+      return false;
+    }
+    return true;
+  }
+
+}

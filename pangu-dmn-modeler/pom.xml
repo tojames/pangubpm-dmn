@@ -1,0 +1,178 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.pangu.dmn</groupId>
+    <artifactId>pangu-engine-dmn-root</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <groupId>com.pangu.dmn</groupId>
+  <artifactId>pangu-dmn-modeler</artifactId>
+  <version>1.0.0</version>
+  <name>pangu BPM - dmn-modeler</name>
+  <inceptionYear>2022</inceptionYear>
+  <packaging>jar</packaging>
+
+  <properties>
+    <pangu.version.old>7.10.0</pangu.version.old>
+    <license.includeTransitiveDependencies>false</license.includeTransitiveDependencies>
+  </properties>
+  <dependencies>
+
+    <dependency>
+      <artifactId>pangu-engine-dmn</artifactId>
+      <groupId>com.pangu.dmn</groupId>
+      <version>1.0.0</version>
+
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.6</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>com.pangubpm.bpm.model*</Export-Package>
+          </instructions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.14</version>
+        <configuration>
+          <excludedScopes>test</excludedScopes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>6</source>
+          <target>6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- check for api differences between latest minor release -->
+  <profiles>
+    <profile>
+      <id>license-header-check</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>check-api-compatibility</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>clirr-maven-plugin</artifactId>
+            <version>2.8</version>
+            <configuration>
+              <comparisonVersion>${pangu.version.old}</comparisonVersion>
+              <logResults>true</logResults>
+              <excludes>
+                <exclude>com/pangubpm/bpm/model/dmn/impl/**</exclude>
+                <exclude>com/pangubpm/bpm/model/dmn/instance/Binding</exclude>
+                <exclude>com/pangubpm/bpm/model/dmn/instance/ParameterReference</exclude>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <id>all</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>check-no-fork</goal>
+                </goals>
+                <configuration>
+                  <textOutputFile>${project.build.directory}/clirr-all.txt</textOutputFile>
+                  <failOnWarning>false</failOnWarning>
+                  <failOnError>false</failOnError>
+                </configuration>
+              </execution>
+              <execution>
+                <id>restrictive</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>check-no-fork</goal>
+                </goals>
+                <configuration>
+                  <textOutputFile>${project.build.directory}/clirr-restrictive.txt</textOutputFile>
+                  <failOnWarning>true</failOnWarning>
+                  <ignoredDifferencesFile>.clirr-jenkins-ignore.xml</ignoredDifferencesFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+
+
+  <url>http://www.pangubpm.com/</url>
+
+  <developers>
+    <developer>
+      <id>http://www.pangubpm.com/</id>
+      <name>盘古BPM工作流平台</name>
+      <organization>http://www.pangubpm.com/</organization>
+      <organizationUrl>http://www.pangubpm.com/</organizationUrl>
+    </developer>
+  </developers>
+
+
+
+
+</project>

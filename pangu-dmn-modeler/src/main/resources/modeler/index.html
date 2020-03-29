@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<head>
+    <title>盘古DMN设计器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    <link rel="stylesheet" href="style/dmn/css/diagram-js.css">
+    <link rel="stylesheet" href="style/dmn/css/dmn.css">
+    <link rel="stylesheet" href="style/dmn/css/dmn-js-decision-table.css">
+    <link rel="stylesheet" href="style/dmn/css/dmn-js-decision-table-controls.css">
+    <link rel="stylesheet" href="style/dmn/css/dmn-js-drd.css">
+    <link rel="stylesheet" href="style/dmn/css/dmn-js-literal-expression.css">
+    <link rel="stylesheet" href="style/dmn/css/dmn-js-shared.css">
+    <link rel="stylesheet" href="style/dmn/css/style.css">
+    <link rel="stylesheet" href="style/codemirror/codemirror.css">
+    <link rel="stylesheet" href="style/codemirror/ambiance.css">
+    <link rel="stylesheet" href="style/summernote/summernote.css">
+    <link rel="stylesheet" href="layui-src/css/layui.css"/>
+    <link rel="stylesheet" href="layui-src/css/modules/layer/default/layer.css"/>
+    <style>
+        .editor-container{
+            height:100% !important;
+            overflow:hidden !important;
+        }
+    </style>
+</head>
+
+
+<body >
+<div class="layui-tab layui-tab-brief" lay-filter="dmnModel">
+    <ul class="layui-tab-title">
+        <li class="layui-this editorLi">设计器</li>
+        <li lay-id="xml" class="xmlEditorLi">XML</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show editor" >  <div class="editor-container">
+        </div></div>
+        <div class="layui-tab-item xmlEditor"  >  <textarea class="form-control" id="codeXml" name="code">
+            </textarea></div>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+</div>
+<script src="index.js"></script>
+<script>
+
+
+</script>
+</body>
+</html>
